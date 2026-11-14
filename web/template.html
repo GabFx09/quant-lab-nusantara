@@ -1,0 +1,715 @@
+<title>Buku Pola Trading</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: satu kolom buku catatan analis — hero dengan grafik bukti, lalu satu "halaman" per pola: aturan di kiri, grafik contoh di kanan, tabel hasil di bawah. */
+:root {
+  --bg: #F4F6F9;
+  --surface: #FFFFFF;
+  --fg: #141A26;
+  --muted: #5A6377;
+  --line: #DADFE8;
+  --accent: #2443B8;
+  --accent-soft: rgba(36, 67, 184, 0.10);
+  --short-soft: rgba(194, 54, 47, 0.10);
+  --win: #0F7F55;
+  --loss: #C2362F;
+  --warn: #A86A12;
+  --c-saham: #2443B8;
+  --c-crypto: #C46A0C;
+  --c-forex: #0E8A8A;
+  --ov1: #2443B8;
+  --ov2: #C46A0C;
+  --ov3: #7A4FC4;
+  --f-display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E121A; --surface: #161C28; --fg: #E5E9F1; --muted: #98A2B6; --line: #2A3243;
+    --accent: #8098FF; --accent-soft: rgba(128, 152, 255, 0.14); --short-soft: rgba(240, 106, 96, 0.14);
+    --win: #3CC98C; --loss: #F06A60; --warn: #E2A93B;
+    --c-saham: #8098FF; --c-crypto: #F0A044; --c-forex: #3CC7C2;
+    --ov1: #8098FF; --ov2: #F0A044; --ov3: #B894FF;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E121A; --surface: #161C28; --fg: #E5E9F1; --muted: #98A2B6; --line: #2A3243;
+  --accent: #8098FF; --accent-soft: rgba(128, 152, 255, 0.14); --short-soft: rgba(240, 106, 96, 0.14);
+  --win: #3CC98C; --loss: #F06A60; --warn: #E2A93B;
+  --c-saham: #8098FF; --c-crypto: #F0A044; --c-forex: #3CC7C2;
+  --ov1: #8098FF; --ov2: #F0A044; --ov3: #B894FF;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 15px/1.6 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 1080px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.05; font-weight: 700; }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; font-weight: 600; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; max-width: 65ch; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.eyebrow { font: 500 0.72rem/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+.mono, .num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+
+/* nav */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+  margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding: 10px max(16px, env(safe-area-inset-left, 0px));
+}
+.nav-inner { max-width: 1080px; margin: 0 auto; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; align-items: center; }
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav .brand { font: 700 0.95rem var(--f-display); margin-right: 8px; white-space: nowrap; }
+.chip {
+  white-space: nowrap; text-decoration: none; color: var(--fg); font-size: 0.82rem;
+  padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface);
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+
+section { padding-block: 56px; border-bottom: 1px solid var(--line); display: grid; gap: 24px; }
+section:last-of-type { border-bottom: 0; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 40px; align-items: center; padding-block: 48px; }
+.hero .lede { font-size: 1.08rem; color: var(--muted); margin-top: 16px; }
+.hero .lede strong { color: var(--fg); }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 28px; border-top: 1px solid var(--line); padding-top: 18px; }
+.fact b { display: block; font: 600 1.6rem/1.1 var(--f-mono); font-variant-numeric: tabular-nums; }
+.fact span { font-size: 0.82rem; color: var(--muted); }
+.figure { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-width: 0; }
+.figure figcaption { font-size: 0.82rem; color: var(--muted); margin-top: 8px; }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { font-family: var(--f-mono); font-size: 11px; fill: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 12px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.legend i.dot { width: 9px; height: 9px; border-radius: 50%; }
+.legend i.box { width: 12px; height: 10px; border-radius: 2px; }
+
+/* how-to */
+.how { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.formula {
+  font-family: var(--f-mono); font-size: 0.92rem; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 8px; padding: 14px 16px; overflow-x: auto; white-space: nowrap;
+}
+.split { display: flex; height: 34px; border-radius: 6px; overflow: hidden; font: 500 0.78rem var(--f-mono); }
+.split div { display: flex; align-items: center; padding: 0 10px; }
+.split .is { flex: 7; background: var(--accent-soft); color: var(--accent); }
+.split .oos { flex: 3; background: var(--accent); color: var(--surface); }
+dl.gloss { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 16px; margin: 0; font-size: 0.9rem; }
+dl.gloss dt { font-family: var(--f-mono); font-weight: 500; }
+dl.gloss dd { margin: 0; color: var(--muted); }
+
+/* pattern */
+.pat-head { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: baseline; justify-content: space-between; }
+.pat-head .titles { display: grid; gap: 6px; }
+.pill { font: 500 0.75rem/1 var(--f-mono); padding: 6px 10px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.good { color: var(--win); }
+.pill.mixed { color: var(--warn); }
+.pill.bad { color: var(--loss); }
+.pat-body { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 32px; align-items: start; }
+.rules { display: grid; gap: 18px; }
+.rules ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
+.rules li { max-width: 60ch; }
+.proscons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; font-size: 0.9rem; }
+.proscons h3 { font-size: 0.85rem; }
+.proscons .plus h3 { color: var(--win); }
+.proscons .minus h3 { color: var(--loss); }
+.params { font-family: var(--f-mono); font-size: 0.82rem; color: var(--muted); }
+
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+th, td { padding: 8px 12px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+th:first-child, td:first-child, th.l, td.l { text-align: left; }
+th { font: 500 0.7rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+td.l { font-family: var(--f-body); }
+.pos { color: var(--win); }
+.neg { color: var(--loss); }
+.bar { display: inline-block; height: 6px; border-radius: 3px; background: var(--accent); vertical-align: middle; margin-left: 6px; }
+table.heat td:not(.l) { text-align: center; min-width: 40px; padding: 8px 4px; }
+table.heat th { text-align: center; }
+details summary { cursor: pointer; font-size: 0.88rem; color: var(--accent); margin-bottom: 10px; }
+
+/* markets */
+.markets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.market { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 10px; align-content: start; }
+.market .tag { font: 500 0.72rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+.market ol { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 0.9rem; }
+
+.limits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 32px; }
+.limits div { display: grid; gap: 4px; }
+.limits p { color: var(--muted); font-size: 0.9rem; }
+footer { padding-block: 32px 48px; font-size: 0.8rem; color: var(--muted); }
+
+@media (max-width: 820px) {
+  .hero, .pat-body, .how, .limits { grid-template-columns: minmax(0, 1fr); }
+  .markets { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 460px) {
+  .facts, .proscons { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<nav class="nav" aria-label="Daftar pola">
+  <div class="nav-inner" id="nav">
+    <span class="brand">Buku Pola</span>
+    <a class="chip" href="#cara-baca">Cara membaca</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section class="hero" aria-labelledby="judul">
+    <div>
+      <div class="eyebrow">Backtest saham · crypto · forex · harian 2010–2026</div>
+      <h1 id="judul" style="margin-top:12px">Pola dengan winrate 100% tidak ditemukan.</h1>
+      <p class="lede">Kami menguji 6 pola trading pada 14 aset. Parameter tiap pola dipilih di 70% data awal, lalu diuji di 30% data terakhir yang belum pernah dilihat. <strong>Winrate yang tinggi di data lama hampir selalu turun di data baru.</strong> Pola yang bertahan punya winrate 30–75% dan untung karena rata-rata untungnya lebih besar dari rata-rata ruginya. Siklus kalender (bulan atau tanggal tertentu) juga diuji dan tidak menaikkan akurasi; filter tren hanya membantu untuk crypto.</p>
+      <div class="facts" id="facts"></div>
+    </div>
+    <figure class="figure" style="margin:0">
+      <div class="eyebrow">Berburu winrate: data lama vs data baru</div>
+      <div id="scatter"></div>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--c-saham)"></i>Saham</span>
+        <span><i class="dot" style="background:var(--c-crypto)"></i>Crypto</span>
+        <span><i class="dot" style="background:var(--c-forex)"></i>Forex</span>
+        <span><i style="background:var(--muted)"></i>Garis y = x (winrate bertahan)</span>
+      </div>
+      <figcaption>Tiap titik: satu aset × satu pola, memakai parameter dengan winrate tertinggi di data lama. Hampir semua titik ada di bawah garis, artinya winrate turun di data baru.</figcaption>
+    </figure>
+  </section>
+
+  <section id="cara-baca" aria-labelledby="h-cara">
+    <div class="eyebrow">Sebelum mulai</div>
+    <h2 id="h-cara">Cara membaca halaman ini</h2>
+    <div class="how">
+      <div style="display:grid;gap:18px;min-width:0">
+        <p>Winrate saja tidak menentukan untung atau rugi. Yang menentukan adalah <em>expectancy</em>, yaitu rata-rata hasil per trade:</p>
+        <div class="formula">Expectancy = (Winrate × Rata-rata untung) − (Lossrate × Rata-rata rugi)</div>
+        <p>Contoh: winrate 35% dengan untung rata-rata +9% dan rugi rata-rata −3% menghasilkan expectancy +1,2% per trade. Winrate 95% dengan untung +1% tapi satu kerugian −30% menghasilkan −0,55%.</p>
+        <div style="display:grid;gap:8px">
+          <div class="eyebrow">Pembagian data tiap aset</div>
+          <div class="split" role="img" aria-label="70 persen data untuk optimasi, 30 persen untuk uji"><div class="is">70% data lama · pilih parameter</div><div class="oos">30% data baru · uji</div></div>
+          <p class="muted" style="font-size:0.85rem">Semua angka di tabel memakai <b>data baru</b> (out-of-sample), kecuali yang diberi label lain. Untuk saham dan forex, data baru dimulai sekitar akhir 2021; untuk crypto, 2023–2024.</p>
+        </div>
+      </div>
+      <dl class="gloss">
+        <dt>Sharpe</dt><dd>Return per unit risiko, disetahunkan. Di atas 0,5 sudah layak; di atas 1 bagus untuk data harian.</dd>
+        <dt>Winrate</dt><dd>Persentase trade yang ditutup untung.</dd>
+        <dt>Profit factor</dt><dd>Total untung ÷ total rugi. Di atas 1 berarti untung bersih.</dd>
+        <dt>Max DD</dt><dd>Penurunan terdalam dari puncak modal.</dd>
+        <dt>Kalahkan B&amp;H</dt><dd>Sharpe pola lebih tinggi dari beli-dan-tahan aset yang sama.</dd>
+        <dt>Biaya</dt><dd id="costs"></dd>
+        <dt>Eksekusi</dt><dd>Sinyal dihitung dari harga penutupan hari ini dan dieksekusi di hari berikutnya, jadi tidak ada intipan ke masa depan.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <div id="patterns"></div>
+
+  <section id="siklus" aria-labelledby="h-siklus">
+    <div class="pat-head">
+      <div class="titles">
+        <div class="eyebrow">Upgrade 1 · Siklus kalender</div>
+        <h2 id="h-siklus">Apakah bulan atau tanggal tertentu cocok untuk pola tertentu?</h2>
+      </div>
+      <span class="pill bad">Tidak menaikkan akurasi</span>
+    </div>
+    <p>Kami menguji tiga hal: efek kalender murni (bulan, hari dalam seminggu, awal/akhir bulan, "Sell in May"), apakah siklus bulanan di data lama berulang di data baru, dan apakah keenam pola di atas lebih bagus jika hanya aktif di bulan atau hari yang di data lama cocok untuk pola itu.</p>
+
+    <div style="display:grid;gap:12px;min-width:0">
+      <h3>1. Persentase tahun dengan return positif, per bulan</h3>
+      <p class="muted" style="font-size:0.9rem">Kalau siklus bulanan itu nyata, bulan yang hijau di data lama juga hijau di data baru. Kenyataannya, urutan bulan hampir acak. Korelasi peringkat antara data lama dan baru ditampilkan di samping nama pasar.</p>
+      <div id="heat" style="display:grid;gap:14px;min-width:0"></div>
+      <div class="legend"><span><i class="box" style="background:color-mix(in srgb, var(--win) 55%, transparent)"></i>Lebih sering naik</span><span><i class="box" style="background:color-mix(in srgb, var(--loss) 55%, transparent)"></i>Lebih sering turun</span><span>Angka = % tahun bulan itu ditutup naik</span></div>
+      <p style="font-size:0.9rem"><b>Satu kandidat yang bertahan:</b> <span id="juli"></span> Polanya konsisten, tapi baru 6 saham yang saling berkorelasi dan sekitar 5 tahun data baru. Anggap ini kandidat untuk diuji lagi, bukan aturan.</p>
+    </div>
+
+    <div style="display:grid;gap:12px;min-width:0">
+      <h3>2. Strategi kalender murni</h3>
+      <div class="tbl" id="pure"></div>
+      <p class="muted" style="font-size:0.88rem">Turn-of-month = pegang hanya di 1 hari terakhir dan 3 hari pertama tiap bulan. Sell in May = pegang hanya November–April. Bulan/hari terpilih = bulan atau hari dengan t-stat &gt; 1 di data lama. Strategi yang sering masuk-keluar, terutama "Hari terpilih" dan "Turn-of-month", tergerus biaya: di IDX biayanya ±0,4% per putaran.</p>
+    </div>
+
+    <div style="display:grid;gap:12px;min-width:0">
+      <h3>3. Pola + filter kalender</h3>
+      <p class="muted" style="font-size:0.9rem">Setiap pola hanya aktif di bulan, hari, atau periode awal/akhir bulan yang return-nya positif di data lama. Batang kiri menunjukkan perbaikan di data lama, batang kanan perbaikan di data baru.</p>
+      <div class="figure" id="filterchart"></div>
+      <div class="tbl" id="filtertbl"></div>
+    </div>
+  </section>
+
+  <section id="filter-tren" aria-labelledby="h-tren">
+    <div class="pat-head">
+      <div class="titles">
+        <div class="eyebrow">Upgrade 2 · Filter tren</div>
+        <h2 id="h-tren">Mean reversion hanya searah tren besar</h2>
+      </div>
+      <span class="pill good">Berhasil untuk crypto</span>
+    </div>
+    <div class="pat-body">
+      <div class="rules">
+        <div><h3>Aturan tambahan</h3>
+          <ul>
+            <li>RSI atau Bollinger hanya boleh <b>beli</b> saat harga penutupan di atas SMA 200.</li>
+            <li>Di forex, <b>short</b> hanya boleh saat harga di bawah SMA 200.</li>
+            <li>Parameter tetap 200 hari, tidak dioptimasi.</li>
+          </ul>
+        </div>
+        <p style="font-size:0.9rem">Tujuannya menghindari membeli aset yang sedang jatuh dalam tren turun panjang. Untuk crypto, filter ini sudah membaik di data lama dan tetap membaik di data baru, jadi lolos validasi. Untuk saham IDX, filter ini merugikan karena sejak 2023 BBCA, BBRI, dan TLKM hanya 34–50% dari waktu berada di atas SMA 200, sehingga banyak pantulan yang terlewat.</p>
+      </div>
+      <div class="tbl" id="trendtbl"></div>
+    </div>
+  </section>
+
+  <section id="per-pasar" aria-labelledby="h-pasar">
+    <div class="eyebrow">Ringkasan</div>
+    <h2 id="h-pasar">Pola yang cocok untuk tiap pasar</h2>
+    <div class="markets">
+      <div class="market">
+        <span class="tag" style="color:var(--c-saham)">Saham</span>
+        <h3>Mean reversion</h3>
+        <ol>
+          <li><a href="#pola-rsi">RSI mean reversion</a>: expectancy positif di semua 6 saham.</li>
+          <li><a href="#pola-bollinger">Bollinger mean reversion</a>: hasilnya mirip RSI.</li>
+        </ol>
+        <p class="muted" style="font-size:0.88rem">Di IDX, buy &amp; hold hampir datar sejak 2021. Pola ini menang karena hanya memegang saham saat harga turun tajam lalu memantul.</p>
+      </div>
+      <div class="market">
+        <span class="tag" style="color:var(--c-crypto)">Crypto</span>
+        <h3>Trend following</h3>
+        <ol>
+          <li><a href="#pola-sma">SMA cross</a>: Sharpe lebih tinggi dari buy &amp; hold di 4 dari 4 coin.</li>
+          <li><a href="#pola-momentum">Momentum</a>: terbaik untuk BTC.</li>
+          <li><a href="#filter-tren">RSI + filter tren SMA 200</a>: lolos uji data lama dan data baru.</li>
+        </ol>
+        <p class="muted" style="font-size:0.88rem">Keuntungan utamanya adalah drawdown lebih dangkal, karena posisi keluar sebelum crash panjang. Winrate hanya 30–40%.</p>
+      </div>
+      <div class="market">
+        <span class="tag" style="color:var(--c-forex)">Forex</span>
+        <h3>Mean reversion kecil</h3>
+        <ol>
+          <li><a href="#pola-bollinger">Bollinger</a> dan <a href="#pola-rsi">RSI</a>: positif di sebagian besar pair.</li>
+        </ol>
+        <p class="muted" style="font-size:0.88rem">Return tanpa leverage hanya sekitar 1–2% per tahun, dan hasilnya sangat bergantung pada spread. Trend following harian gagal di forex pada periode ini.</p>
+      </div>
+    </div>
+    <div style="display:grid;gap:10px">
+      <h3>Pembanding: beli dan tahan (data baru)</h3>
+      <div class="tbl" id="bh"></div>
+    </div>
+  </section>
+
+  <section id="batasan" aria-labelledby="h-batas">
+    <div class="eyebrow">Sebelum memakai uang sungguhan</div>
+    <h2 id="h-batas">Batasan hasil ini</h2>
+    <div class="limits">
+      <div><h3>Survivorship bias</h3><p>Aset yang diuji adalah aset yang masih besar hari ini. Saham atau coin yang bangkrut tidak ikut diuji, sehingga hasil cenderung terlalu bagus.</p></div>
+      <div><h3>Jumlah trade sedikit</h3><p>Banyak kombinasi hanya punya 5–25 trade di data baru. Winrate dari sampel sekecil itu bisa meleset ±20 poin karena kebetulan.</p></div>
+      <div><h3>Satu kali pembagian data</h3><p>Belum ada uji walk-forward, yaitu optimasi ulang berkala di jendela waktu bergulir. Itu langkah validasi berikutnya.</p></div>
+      <div><h3>Biaya disederhanakan</h3><p>Slippage, pajak, swap/funding, dan lot minimum IDX belum dihitung. Strategi dengan banyak trade paling terdampak.</p></div>
+      <div><h3>Tanpa stop loss</h3><p>Pola mean reversion di sini tidak memakai stop loss. Satu crash bisa menghapus banyak kemenangan kecil.</p></div>
+      <div><h3>Hanya data harian</h3><p>Data dari Yahoo Finance, timeframe harian. Hasil intraday bisa sangat berbeda.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    Dibuat dari <span class="mono">hasil_backtest.csv</span> pada <span id="gen"></span>. Halaman ini bersifat edukasi, bukan nasihat keuangan.
+  </footer>
+</main>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const NS = 'http://www.w3.org/2000/svg';
+const loc = 'id-ID';
+const fmt = (v, d = 2) => v == null ? '–' : v.toLocaleString(loc, { minimumFractionDigits: d, maximumFractionDigits: d });
+const pct = (v, d = 0) => v == null ? '–' : (v * 100).toLocaleString(loc, { minimumFractionDigits: d, maximumFractionDigits: d }) + '%';
+const sign = v => v == null ? '' : v > 0 ? 'pos' : v < 0 ? 'neg' : '';
+const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : null;
+const median = a => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const KELAS = ['saham', 'crypto', 'forex'];
+const KLABEL = { saham: 'Saham', crypto: 'Crypto', forex: 'Forex' };
+
+function el(tag, attrs = {}, parent) {
+  const isSvg = ['svg', 'g', 'path', 'line', 'rect', 'circle', 'text', 'polygon', 'title'].includes(tag);
+  const e = isSvg ? document.createElementNS(NS, tag) : document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'text') e.textContent = v; else if (k === 'html') e.innerHTML = v; else e.setAttribute(k, v);
+  }
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function niceTicks(lo, hi, n = 4) {
+  const span = hi - lo, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => span / s <= n) || 10 * mag;
+  const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10));
+  return out;
+}
+
+/* ---------- pattern copy ---------- */
+const PAT = {
+  'SMA cross': {
+    id: 'pola-sma', judul: 'Persilangan moving average', keluarga: 'Trend following',
+    verdict: ['good', 'Cocok untuk crypto'],
+    rules: ['<b>Masuk:</b> beli saat SMA cepat naik ke atas SMA lambat.', '<b>Keluar:</b> jual saat SMA cepat turun ke bawah SMA lambat.', '<b>Forex:</b> saat SMA cepat di bawah, ambil posisi short.'],
+    params: 'SMA cepat 5/10/20/50 × SMA lambat 50/100/150/200',
+    plus: ['Menangkap tren besar sampai selesai', 'Otomatis keluar saat tren berbalik, jadi kerugian terbatas', 'Sedikit trade, biaya rendah'],
+    minus: ['Winrate rendah (33–42%)', 'Sering salah sinyal saat pasar sideways', 'Masuk dan keluar selalu terlambat'],
+  },
+  'Donchian': {
+    id: 'pola-donchian', judul: 'Breakout Donchian', keluarga: 'Trend following',
+    verdict: ['mixed', 'Hasil campuran'],
+    rules: ['<b>Masuk:</b> beli saat harga penutupan menembus harga tertinggi <i>n</i> hari sebelumnya.', '<b>Keluar:</b> jual saat harga penutupan jatuh di bawah harga terendah <i>n</i>/2 hari.', 'Ini versi harian dari aturan "Turtle Traders".'],
+    params: 'n = 20 / 40 / 55 / 100 hari',
+    plus: ['Aturannya sangat jelas', 'Bekerja baik untuk BTC dan saham US yang sedang tren'],
+    minus: ['Di crypto, Sharpe turun dari 1,46 (data lama) ke 0,03 (data baru)', 'Di forex harian hampir tidak ada edge', 'Banyak breakout palsu'],
+  },
+  'Momentum': {
+    id: 'pola-momentum', judul: 'Momentum deret waktu', keluarga: 'Trend following',
+    verdict: ['mixed', 'Hanya kuat di BTC'],
+    rules: ['<b>Masuk / tahan:</b> pegang aset selama return <i>n</i> hari terakhir positif.', '<b>Keluar:</b> keluar ke kas saat return <i>n</i> hari terakhir negatif.', '<b>Forex:</b> short saat return negatif.'],
+    params: 'n = 20 / 60 / 120 / 250 hari',
+    plus: ['Paling sederhana, hanya satu parameter', 'Menghindari sebagian besar bear market panjang'],
+    minus: ['Winrate terendah (~30%)', 'Bolak-balik masuk-keluar saat harga datar', 'Di saham hanya mengalahkan buy & hold di 1 dari 6 aset'],
+  },
+  'RSI revert': {
+    id: 'pola-rsi', judul: 'RSI mean reversion', keluarga: 'Mean reversion',
+    verdict: ['good', 'Paling konsisten'],
+    rules: ['<b>Masuk:</b> beli saat RSI(<i>n</i>) turun di bawah batas bawah (oversold).', '<b>Keluar:</b> jual saat RSI kembali di atas 50.', '<b>Forex:</b> short saat RSI di atas 100 − batas, tutup saat di bawah 50.'],
+    params: 'RSI n = 2 / 3 / 5 / 14 × batas bawah 5 / 10 / 20 / 30',
+    plus: ['Winrate tinggi (~70%) yang bertahan di data baru', 'Expectancy positif di semua saham dan crypto', 'Modal hanya terpakai sebagian kecil waktu'],
+    minus: ['Tanpa stop loss: saat crash, posisi bisa terus turun', 'Untung per trade kecil, jadi sensitif terhadap biaya', 'Sedikit sinyal per aset'],
+  },
+  'Bollinger rev': {
+    id: 'pola-bollinger', judul: 'Bollinger mean reversion', keluarga: 'Mean reversion',
+    verdict: ['good', 'Kuat di saham & forex'],
+    rules: ['<b>Masuk:</b> beli saat harga penutupan di bawah MA(<i>n</i>) − <i>k</i> deviasi standar.', '<b>Keluar:</b> jual saat harga kembali di atas MA(<i>n</i>).', '<b>Forex:</b> short saat harga di atas band atas.'],
+    params: 'MA n = 10 / 20 / 40 × k = 1,5 / 2,0 / 2,5',
+    plus: ['Hasil terbaik untuk BBCA: Sharpe 0,84 vs buy & hold 0,13', 'Positif di semua pair forex yang diuji', 'Drawdown jauh lebih dangkal dari buy & hold'],
+    minus: ['Gagal di crypto: crypto cenderung terus turun, bukan memantul', 'Tanpa stop loss', 'Return absolut di forex sangat kecil'],
+  },
+  'Engulfing': {
+    id: 'pola-engulfing', judul: 'Candlestick engulfing', keluarga: 'Pola candlestick',
+    verdict: ['bad', 'Tidak ada edge'],
+    rules: ['<b>Masuk:</b> beli besok setelah bullish engulfing, yaitu candle merah diikuti candle hijau yang badannya menutupi candle merah.', '<b>Keluar:</b> jual setelah ditahan <i>h</i> hari.', '<b>Forex:</b> bearish engulfing → short.'],
+    params: 'tahan h = 1 / 3 / 5 / 10 hari',
+    plus: ['Mudah dikenali di grafik', 'Satu hasil bagus (ASII, tahan 10 hari), kemungkinan kebetulan'],
+    minus: ['Rata-rata merugi di semua pasar', 'Expectancy positif hanya di 1 dari 6 saham', 'Pola populer di buku, tapi tidak lolos uji data baru'],
+  },
+};
+
+/* ---------- facts & scatter ---------- */
+function facts() {
+  const h = D.hunt;
+  const isW = mean(h.map(x => x.isWin)), oosW = mean(h.map(x => x.oosWin).filter(x => x != null));
+  const perfect = h.filter(x => x.oosWin === 1);
+  const box = document.getElementById('facts');
+  const items = [
+    [pct(isW) + ' → ' + pct(oosW), 'rata-rata winrate saat parameter dipilih demi winrate, data lama → baru'],
+    ['0', 'pola dengan winrate 100% dan ≥ 10 trade, di data lama maupun baru'],
+    [String(perfect.length), 'kasus 100% di data baru, masing-masing hanya ' + perfect.map(x => x.oosN).sort((a, b) => a - b).join('/') + ' trade'],
+  ];
+  for (const [b, s] of items) { const f = el('div', { class: 'fact' }, box); el('b', { text: b }, f); el('span', { text: s }, f); }
+}
+
+function scatter() {
+  const W = 460, H = 360, m = { l: 44, r: 14, t: 14, b: 40 };
+  const lo = 0.2, hi = 1.0;
+  const sx = v => m.l + (v - lo) / (hi - lo) * (W - m.l - m.r);
+  const sy = v => H - m.b - (v - lo) / (hi - lo) * (H - m.t - m.b);
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Grafik sebar winrate data lama terhadap data baru' }, document.getElementById('scatter'));
+  const ticks = [0.2, 0.4, 0.6, 0.8, 1.0];
+  for (const t of ticks) {
+    el('line', { x1: sx(lo), x2: sx(hi), y1: sy(t), y2: sy(t), stroke: 'var(--line)', 'stroke-width': 1 }, svg);
+    el('line', { x1: sx(t), x2: sx(t), y1: sy(lo), y2: sy(hi), stroke: 'var(--line)', 'stroke-width': 1 }, svg);
+    el('text', { x: m.l - 8, y: sy(t) + 4, 'text-anchor': 'end', text: pct(t) }, svg);
+    el('text', { x: sx(t), y: H - m.b + 18, 'text-anchor': 'middle', text: pct(t) }, svg);
+  }
+  el('text', { x: (m.l + W - m.r) / 2, y: H - 4, 'text-anchor': 'middle', text: 'Winrate data lama (dipilih tertinggi)' }, svg);
+  el('text', { x: 12, y: (m.t + H - m.b) / 2, 'text-anchor': 'middle', transform: `rotate(-90 12 ${(m.t + H - m.b) / 2})`, text: 'Winrate data baru' }, svg);
+  el('line', { x1: sx(lo), y1: sy(lo), x2: sx(hi), y2: sy(hi), stroke: 'var(--muted)', 'stroke-width': 1.5, 'stroke-dasharray': '4 4' }, svg);
+  el('line', { x1: sx(lo), x2: sx(hi), y1: sy(1), y2: sy(1), stroke: 'var(--loss)', 'stroke-width': 1.5 }, svg);
+  el('text', { x: sx(lo) + 6, y: sy(1) - 6, text: 'target "100%"', fill: 'var(--loss)', style: 'fill:var(--loss)' }, svg);
+  for (const p of D.hunt) {
+    if (p.oosWin == null) continue;
+    const y = Math.max(lo, p.oosWin);
+    const c = el('circle', { cx: sx(Math.max(lo, p.isWin)), cy: sy(y), r: 5, fill: `var(--c-${p.kelas})`, 'fill-opacity': 0.8, stroke: 'var(--surface)', 'stroke-width': 1 }, svg);
+    el('title', {}, c).textContent = `${p.aset} · ${p.strategi}\nData lama: ${pct(p.isWin)} (${p.isN} trade)\nData baru: ${pct(p.oosWin)} (${p.oosN} trade)`;
+  }
+}
+
+/* ---------- example chart ---------- */
+function priceChart(host, ex, name) {
+  const n = ex.close.length, W = 720, hasSub = !!ex.sub;
+  const mainH = 260, subH = hasSub ? 90 : 0, gap = hasSub ? 18 : 0, bottom = 24;
+  const H = mainH + gap + subH + bottom, m = { l: 8, r: 58, t: 8 };
+  const sx = i => m.l + i / (n - 1) * (W - m.l - m.r);
+  const vals = [...ex.close, ...Object.values(ex.overlays).flat()].filter(v => v != null);
+  let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi - lo) * 0.06; lo -= pad; hi += pad;
+  const sy = v => m.t + (hi - v) / (hi - lo) * (mainH - m.t);
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `Contoh sinyal ${name} pada ${ex.aset}` }, host);
+
+  // shading posisi
+  let i = 0;
+  while (i < n) {
+    if (ex.pos[i] !== 0) {
+      let j = i; while (j + 1 < n && ex.pos[j + 1] === ex.pos[i]) j++;
+      const x0 = sx(Math.max(0, i - 0.5)), x1 = sx(Math.min(n - 1, j + 0.5));
+      el('rect', { x: x0, y: m.t, width: Math.max(1, x1 - x0), height: mainH - m.t, fill: ex.pos[i] > 0 ? 'var(--accent-soft)' : 'var(--short-soft)' }, svg);
+      i = j + 1;
+    } else i++;
+  }
+  // grid & axis
+  const decimals = hi < 10 ? 3 : hi < 1000 ? 1 : 0;
+  for (const t of niceTicks(lo, hi, 4)) {
+    el('line', { x1: m.l, x2: W - m.r, y1: sy(t), y2: sy(t), stroke: 'var(--line)', 'stroke-width': 1 }, svg);
+    el('text', { x: W - m.r + 6, y: sy(t) + 4, text: t.toLocaleString(loc, { maximumFractionDigits: decimals }) }, svg);
+  }
+  const path = (arr, ys) => arr.map((v, k) => v == null ? null : `${sx(k).toFixed(1)},${ys(v).toFixed(1)}`).reduce((acc, p) => {
+    if (p == null) { acc.push(''); return acc; } acc[acc.length - 1] += (acc[acc.length - 1] ? 'L' : 'M') + p; return acc;
+  }, ['']).filter(Boolean).join('');
+  const ovColors = ['var(--ov1)', 'var(--ov2)', 'var(--ov3)'];
+  Object.entries(ex.overlays).forEach(([k, arr], idx) => {
+    el('path', { d: path(arr, sy), fill: 'none', stroke: ovColors[idx % 3], 'stroke-width': 1.4, 'stroke-dasharray': idx === 0 ? '' : '5 3' }, svg);
+  });
+  el('path', { d: path(ex.close, sy), fill: 'none', stroke: 'var(--fg)', 'stroke-width': 1.6 }, svg);
+  // marker masuk / keluar
+  for (let k = 1; k < n; k++) {
+    const a = ex.pos[k - 1], b = ex.pos[k];
+    if (a === b) continue;
+    const x = sx(k), y = sy(ex.close[k]);
+    if (b !== 0) {
+      const up = b > 0, s = 6;
+      el('polygon', { points: up ? `${x},${y + 6} ${x - s},${y + 6 + s * 1.6} ${x + s},${y + 6 + s * 1.6}` : `${x},${y - 6} ${x - s},${y - 6 - s * 1.6} ${x + s},${y - 6 - s * 1.6}`, fill: up ? 'var(--win)' : 'var(--loss)' }, svg);
+    }
+    if (a !== 0) el('circle', { cx: x, cy: y, r: 3.5, fill: 'var(--surface)', stroke: 'var(--fg)', 'stroke-width': 1.5 }, svg);
+  }
+  // sub-panel
+  if (hasSub) {
+    const s = ex.sub, top = mainH + gap, sv = s.values.filter(v => v != null);
+    let slo = s.range ? s.range[0] : Math.min(...sv, 0), shi = s.range ? s.range[1] : Math.max(...sv, 0);
+    if (!s.range) { const p2 = (shi - slo) * 0.08; slo -= p2; shi += p2; }
+    const ssy = v => top + (shi - v) / (shi - slo) * subH;
+    el('rect', { x: m.l, y: top, width: W - m.l - m.r, height: subH, fill: 'none', stroke: 'var(--line)' }, svg);
+    for (const L of s.lines) {
+      el('line', { x1: m.l, x2: W - m.r, y1: ssy(L), y2: ssy(L), stroke: 'var(--muted)', 'stroke-dasharray': '3 3', 'stroke-width': 1 }, svg);
+      el('text', { x: W - m.r + 6, y: ssy(L) + 4, text: L.toLocaleString(loc) }, svg);
+    }
+    el('path', { d: path(s.values, ssy), fill: 'none', stroke: 'var(--ov1)', 'stroke-width': 1.3 }, svg);
+    el('text', { x: m.l + 6, y: top + 13, text: s.name }, svg);
+  }
+  // tanggal
+  const yb = H - 6;
+  [0, Math.round((n - 1) / 3), Math.round(2 * (n - 1) / 3), n - 1].forEach((k, idx) => {
+    el('text', { x: sx(k), y: yb, 'text-anchor': idx === 0 ? 'start' : idx === 3 ? 'end' : 'middle', text: ex.dates[k] }, svg);
+  });
+  // legend
+  const lg = el('div', { class: 'legend' }, host);
+  el('span', { html: '<i style="background:var(--fg)"></i>Harga penutupan' }, lg);
+  Object.keys(ex.overlays).forEach((k, idx) => el('span', { html: `<i style="background:${ovColors[idx % 3]}"></i>${k}` }, lg));
+  el('span', { html: '<i class="box" style="background:var(--accent-soft);border:1px solid var(--accent)"></i>Posisi long' }, lg);
+  if (ex.pos.some(v => v < 0)) el('span', { html: '<i class="box" style="background:var(--short-soft);border:1px solid var(--loss)"></i>Posisi short' }, lg);
+  el('span', { html: '<i class="dot" style="background:var(--win)"></i>Masuk' }, lg);
+  el('span', { html: '<i class="dot" style="background:var(--surface);border:1.5px solid var(--fg)"></i>Keluar' }, lg);
+}
+
+/* ---------- tables ---------- */
+function classTable(rows) {
+  const wrap = el('div', { class: 'tbl' });
+  const t = el('table', {}, wrap);
+  el('thead', { html: '<tr><th>Pasar</th><th>Sharpe lama</th><th>Sharpe baru</th><th>Winrate</th><th>Profit factor</th><th>Expectancy positif</th><th>Kalahkan B&amp;H</th></tr>' }, t);
+  const tb = el('tbody', {}, t);
+  for (const k of KELAS) {
+    const r = rows.filter(x => x.kelas === k); if (!r.length) continue;
+    const isS = mean(r.map(x => x.IS.Sharpe)), oS = mean(r.map(x => x.OOS.Sharpe));
+    const wr = mean(r.map(x => x.OOS.Winrate).filter(v => v != null));
+    const pf = median(r.map(x => x.OOS.ProfitFactor).filter(v => v != null));
+    const posN = r.filter(x => x.OOS.Expectancy > 0).length, beat = r.filter(x => x.OOS.Sharpe > x.BH.Sharpe).length;
+    el('tr', { html: `<td class="l"><span style="color:var(--c-${k})">●</span> ${KLABEL[k]}</td><td>${fmt(isS)}</td><td class="${sign(oS)}">${fmt(oS)}</td><td>${pct(wr)}<span class="bar" style="width:${Math.round((wr || 0) * 40)}px"></span></td><td class="${pf == null ? '' : pf >= 1 ? 'pos' : 'neg'}">${fmt(pf)}</td><td>${posN} / ${r.length}</td><td>${beat} / ${r.length}</td>` }, tb);
+  }
+  return wrap;
+}
+function assetTable(rows) {
+  const wrap = el('div', { class: 'tbl' });
+  const t = el('table', {}, wrap);
+  el('thead', { html: '<tr><th>Aset</th><th class="l">Parameter terpilih</th><th>Trade</th><th>Winrate</th><th>Sharpe</th><th>B&amp;H Sharpe</th><th>CAGR</th><th>Max DD</th><th>PF</th></tr>' }, t);
+  const tb = el('tbody', {}, t);
+  for (const r of [...rows].sort((a, b) => KELAS.indexOf(a.kelas) - KELAS.indexOf(b.kelas) || b.OOS.Sharpe - a.OOS.Sharpe)) {
+    const p = r.params.replace(/[{}']/g, '').replace(/:/g, ' =');
+    el('tr', { html: `<td class="l"><span style="color:var(--c-${r.kelas})">●</span> <span class="mono">${r.aset}</span></td><td class="l mono" style="font-family:var(--f-mono)">${p}</td><td>${r.OOS.Trades}</td><td>${pct(r.OOS.Winrate)}</td><td class="${sign(r.OOS.Sharpe)}">${fmt(r.OOS.Sharpe)}</td><td>${fmt(r.BH.Sharpe)}</td><td class="${sign(r.OOS.CAGR)}">${pct(r.OOS.CAGR, 1)}</td><td>${pct(r.OOS.MaxDD)}</td><td>${fmt(r.OOS.ProfitFactor)}</td>` }, tb);
+  }
+  return wrap;
+}
+
+/* ---------- siklus kalender ---------- */
+const BLN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+const rankCorr = (a, b) => {
+  const rk = v => { const s = v.map((x, i) => [x, i]).sort((p, q) => p[0] - q[0]); const r = []; s.forEach(([, i], k) => r[i] = k); return r; };
+  const x = rk(a), y = rk(b), mx = mean(x), my = mean(y);
+  let n = 0, dx = 0, dy = 0; x.forEach((v, i) => { n += (v - mx) * (y[i] - my); dx += (v - mx) ** 2; dy += (y[i] - my) ** 2; });
+  return n / Math.sqrt(dx * dy);
+};
+function renderSeasonal() {
+  const M = D.musiman;
+  // heatmap
+  const heat = document.getElementById('heat');
+  const stat = (k, oos, m) => { const r = M.monthly.filter(x => x.kelas === k && x.oos === oos && x.m === m).map(x => x.r); return { pos: r.filter(v => v > 0).length / r.length, mean: mean(r), n: r.length }; };
+  for (const k of KELAS) {
+    const S = { false: BLN.map((_, i) => stat(k, false, i + 1)), true: BLN.map((_, i) => stat(k, true, i + 1)) };
+    const rho = rankCorr(S.false.map(s => s.mean), S.true.map(s => s.mean));
+    const box = el('div', { style: 'display:grid;gap:6px;min-width:0' }, heat);
+    el('div', { html: `<b style="color:var(--c-${k})">${KLABEL[k]}</b> <span class="muted mono" style="font-size:0.8rem">· korelasi peringkat lama↔baru ${fmt(rho)}</span>` }, box);
+    const w = el('div', { class: 'tbl' }, box), t = el('table', { class: 'heat' }, w);
+    el('thead', { html: '<tr><th></th>' + BLN.map(b => `<th>${b}</th>`).join('') + '</tr>' }, t);
+    const tb = el('tbody', {}, t);
+    for (const [oos, lab] of [[false, 'Data lama'], [true, 'Data baru']]) {
+      const tr = el('tr', {}, tb); el('td', { class: 'l', text: lab }, tr);
+      S[oos].forEach((s, i) => {
+        const d = s.pos - 0.5, a = Math.round(Math.min(1, Math.abs(d) * 2.4) * 60);
+        el('td', { text: Math.round(s.pos * 100), title: `${BLN[i]} · ${lab}: naik ${Math.round(s.pos * 100)}% dari ${s.n} bulan-aset, rata-rata ${pct(s.mean, 1)}`, style: `background:color-mix(in srgb, var(${d >= 0 ? '--win' : '--loss'}) ${a}%, transparent)` }, tr);
+      });
+    }
+  }
+  const j0 = stat('saham', false, 7), j1 = stat('saham', true, 7);
+  document.getElementById('juli').textContent = `Juli di saham naik ${pct(j0.pos)} dari bulan-aset di data lama dan ${pct(j1.pos)} di data baru, dengan rata-rata ${pct(j0.mean, 1)} dan ${pct(j1.mean, 1)}.`;
+
+  // kalender murni
+  const names = ['Buy & Hold', 'Turn-of-month', 'Sell in May', 'Bulan terpilih', 'Hari terpilih'];
+  const pw = el('table', {}, document.getElementById('pure'));
+  el('thead', { html: '<tr><th>Pasar</th><th class="l">Strategi</th><th>Sharpe lama</th><th>Sharpe baru</th><th>Max DD baru</th><th>Kalahkan B&amp;H</th></tr>' }, pw);
+  const pb = el('tbody', {}, pw);
+  for (const k of KELAS) {
+    const bh = Object.fromEntries(M.pure.filter(x => x.kelas === k && x.strategi === 'Buy & Hold').map(x => [x.aset, x.OOS.Sharpe]));
+    for (const s of names) {
+      const r = M.pure.filter(x => x.kelas === k && x.strategi === s);
+      const iS = mean(r.map(x => x.IS.Sharpe)), oS = mean(r.map(x => x.OOS.Sharpe)), dd = mean(r.map(x => x.OOS.MaxDD));
+      const beat = s === 'Buy & Hold' ? '–' : `${r.filter(x => x.OOS.Sharpe > bh[x.aset]).length} / ${r.length}`;
+      el('tr', { html: `<td class="l">${s === names[0] ? `<span style="color:var(--c-${k})">●</span> ${KLABEL[k]}` : ''}</td><td class="l"${s === 'Buy & Hold' ? ' style="color:var(--muted)"' : ''}>${s}</td><td>${fmt(iS)}</td><td class="${sign(oS)}">${fmt(oS)}</td><td>${pct(dd)}</td><td>${beat}</td>` }, pb);
+    }
+  }
+
+  // filter pada pola
+  const F = [['bulan', 'Filter bulan'], ['hari', 'Filter hari'], ['tom', 'Filter awal/akhir bulan']];
+  const agg = (rows, key) => {
+    const d = rows.map(x => ({ dIS: x[key].IS.Sharpe - x.tanpa.IS.Sharpe, dOOS: x[key].OOS.Sharpe - x.tanpa.OOS.Sharpe }));
+    return { dIS: mean(d.map(v => v.dIS)), dOOS: mean(d.map(v => v.dOOS)), better: d.filter(v => v.dOOS > 0).length, n: d.length };
+  };
+  const all = F.map(([k, lab]) => ({ lab, ...agg(M.filter, k) }));
+  const W = 640, rowH = 54, H = all.length * rowH + 40, m = { l: 170, r: 20 };
+  const vmax = Math.max(0.3, ...all.flatMap(a => [Math.abs(a.dIS), Math.abs(a.dOOS)]));
+  const sx = v => m.l + (v + vmax) / (2 * vmax) * (W - m.l - m.r);
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Perubahan Sharpe karena filter kalender, data lama dan data baru' }, document.getElementById('filterchart'));
+  for (const t of niceTicks(-vmax, vmax, 4)) {
+    el('line', { x1: sx(t), x2: sx(t), y1: 8, y2: H - 26, stroke: t === 0 ? 'var(--muted)' : 'var(--line)', 'stroke-width': 1 }, svg);
+    el('text', { x: sx(t), y: H - 10, 'text-anchor': 'middle', text: (t > 0 ? '+' : '') + fmt(t) }, svg);
+  }
+  all.forEach((a, i) => {
+    const y = 12 + i * rowH;
+    el('text', { x: m.l - 10, y: y + 20, 'text-anchor': 'end', text: a.lab, style: 'fill:var(--fg)' }, svg);
+    for (const [v, off, col, lab] of [[a.dIS, 0, 'var(--muted)', 'lama'], [a.dOOS, 18, 'var(--accent)', 'baru']]) {
+      const x0 = sx(Math.min(0, v)), x1 = sx(Math.max(0, v));
+      el('rect', { x: x0, y: y + off, width: Math.max(1, x1 - x0), height: 14, rx: 2, fill: col }, svg);
+      el('text', { x: v >= 0 ? x1 + 6 : x0 - 6, y: y + off + 11, 'text-anchor': v >= 0 ? 'start' : 'end', text: `${lab} ${(v > 0 ? '+' : '') + fmt(v)}` }, svg);
+    }
+  });
+  const lg = el('div', { class: 'legend' }, document.getElementById('filterchart'));
+  el('span', { html: '<i class="box" style="background:var(--muted)"></i>Perubahan Sharpe di data lama (tempat filter dipilih)' }, lg);
+  el('span', { html: '<i class="box" style="background:var(--accent)"></i>Perubahan Sharpe di data baru' }, lg);
+
+  const ft = el('table', {}, document.getElementById('filtertbl'));
+  el('thead', { html: '<tr><th>Pasar</th><th class="l">Filter</th><th>Δ Sharpe lama</th><th>Δ Sharpe baru</th><th>Pola yang membaik (data baru)</th></tr>' }, ft);
+  const fb = el('tbody', {}, ft);
+  for (const k of KELAS) F.forEach(([key, lab], i) => {
+    const a = agg(M.filter.filter(x => x.kelas === k), key);
+    el('tr', { html: `<td class="l">${i === 0 ? `<span style="color:var(--c-${k})">●</span> ${KLABEL[k]}` : ''}</td><td class="l">${lab}</td><td class="${sign(a.dIS)}">${(a.dIS > 0 ? '+' : '') + fmt(a.dIS)}</td><td class="${sign(a.dOOS)}">${(a.dOOS > 0 ? '+' : '') + fmt(a.dOOS)}</td><td>${a.better} / ${a.n}</td>` }, fb);
+  });
+
+  // filter tren
+  const tt = el('table', {}, document.getElementById('trendtbl'));
+  el('thead', { html: '<tr><th>Pasar · pola</th><th>Sharpe baru</th><th>Winrate</th><th>Max DD</th><th>Rugi rata-rata</th></tr>' }, tt);
+  const tb2 = el('tbody', {}, tt);
+  const arrow = (a, b, f, better) => `${f(a)} → <b class="${b == null || a == null ? '' : (better(b, a) ? 'pos' : 'neg')}">${f(b)}</b>`;
+  for (const k of KELAS) for (const s of ['RSI revert', 'Bollinger rev']) {
+    const r = M.trend.filter(x => x.kelas === k && x.strategi === s); if (!r.length) continue;
+    const g = (w, f) => mean(r.map(x => x[w].OOS[f]).filter(v => v != null));
+    el('tr', { html: `<td class="l"><span style="color:var(--c-${k})">●</span> ${KLABEL[k]} · ${s === 'RSI revert' ? 'RSI' : 'Bollinger'}</td>
+      <td>${arrow(g('tanpa', 'Sharpe'), g('trend', 'Sharpe'), v => fmt(v), (b, a) => b > a)}</td>
+      <td>${arrow(g('tanpa', 'Winrate'), g('trend', 'Winrate'), v => pct(v), (b, a) => b > a)}</td>
+      <td>${arrow(g('tanpa', 'MaxDD'), g('trend', 'MaxDD'), v => pct(v), (b, a) => b > a)}</td>
+      <td>${arrow(g('tanpa', 'AvgLoss'), g('trend', 'AvgLoss'), v => pct(v, 1), (b, a) => b > a)}</td>` }, tb2);
+  }
+}
+
+/* ---------- render ---------- */
+function render() {
+  document.getElementById('gen').textContent = new Date(D.generated).toLocaleDateString(loc, { day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('costs').textContent = KELAS.map(k => `${KLABEL[k]} ${pct(D.universe[k].cost, 2)}`).join(' · ') + ' per transaksi.';
+  facts(); scatter();
+  const nav = document.getElementById('nav'), host = document.getElementById('patterns');
+  for (const [name, S] of Object.entries(D.strategies)) {
+    const P = PAT[name];
+    el('a', { class: 'chip', href: '#' + P.id, text: P.judul }, nav);
+    const sec = el('section', { id: P.id, 'aria-labelledby': 'h-' + P.id }, host);
+    const head = el('div', { class: 'pat-head' }, sec);
+    const tt = el('div', { class: 'titles' }, head);
+    el('div', { class: 'eyebrow', text: P.keluarga }, tt);
+    el('h2', { id: 'h-' + P.id, text: P.judul }, tt);
+    el('span', { class: 'pill ' + P.verdict[0], text: P.verdict[1] }, head);
+
+    const body = el('div', { class: 'pat-body' }, sec);
+    const rules = el('div', { class: 'rules' }, body);
+    const ru = el('div', {}, rules); el('h3', { text: 'Aturan' }, ru);
+    const ul = el('ul', {}, ru); P.rules.forEach(r => el('li', { html: r }, ul));
+    el('div', { class: 'params', html: '<span class="eyebrow">Parameter diuji</span><br>' + P.params }, rules);
+    const pc = el('div', { class: 'proscons' }, rules);
+    for (const [cls, title, list] of [['plus', 'Kelebihan', P.plus], ['minus', 'Kelemahan', P.minus]]) {
+      const d = el('div', { class: cls }, pc); el('h3', { text: title }, d);
+      const u = el('ul', { style: 'margin:6px 0 0;padding-left:18px;display:grid;gap:4px' }, d); list.forEach(x => el('li', { text: x }, u));
+    }
+
+    const fig = el('figure', { class: 'figure', style: 'margin:0' }, body);
+    const ex = S.example;
+    const pstr = Object.entries(ex.params).map(([k, v]) => `${k} = ${String(v).replace('.', ',')}`).join(', ');
+    el('div', { class: 'eyebrow', text: `Contoh: ${ex.aset} · ${pstr}` }, fig);
+    const ch = el('div', { style: 'margin-top:10px' }, fig); priceChart(ch, ex, P.judul);
+    el('figcaption', { text: `${ex.close.length} hari terakhir. Contoh ini dipilih dari aset dengan hasil terbaik di data baru, jadi ini kasus terbaik, bukan kasus rata-rata.` }, fig);
+
+    const res = el('div', { style: 'display:grid;gap:10px;min-width:0' }, sec);
+    el('h3', { text: 'Hasil di data baru, per pasar' }, res);
+    res.appendChild(classTable(S.rows));
+    const det = el('details', {}, res);
+    el('summary', { text: `Lihat hasil per aset (${S.rows.length} aset)` }, det);
+    det.appendChild(assetTable(S.rows));
+  }
+  // buy & hold
+  const wrap = el('div', {}); const t = el('table', {}, wrap);
+  el('thead', { html: '<tr><th>Aset</th><th>CAGR</th><th>Sharpe</th><th>Max DD</th></tr>' }, t);
+  const tb = el('tbody', {}, t);
+  for (const r of D.benchmark) el('tr', { html: `<td class="l"><span style="color:var(--c-${r.kelas})">●</span> <span class="mono">${r.aset}</span></td><td class="${sign(r.OOS.CAGR)}">${pct(r.OOS.CAGR, 1)}</td><td class="${sign(r.OOS.Sharpe)}">${fmt(r.OOS.Sharpe)}</td><td>${pct(r.OOS.MaxDD)}</td>` }, tb);
+  document.getElementById('bh').appendChild(t);
+  renderSeasonal();
+  el('a', { class: 'chip', href: '#siklus', text: 'Siklus kalender' }, nav);
+  el('a', { class: 'chip', href: '#filter-tren', text: 'Filter tren' }, nav);
+  el('a', { class: 'chip', href: '#per-pasar', text: 'Per pasar' }, nav);
+  el('a', { class: 'chip', href: '#batasan', text: 'Batasan' }, nav);
+  if (location.hash) { const target = document.getElementById(location.hash.slice(1)); if (target) target.scrollIntoView(); }
+}
+render();
+</script>

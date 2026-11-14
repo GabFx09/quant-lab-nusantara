@@ -1,0 +1,7 @@
+__pycache__/
+data_cache/
+site/
+web/index.html
+hasil_backtest.csv
+hasil_musiman.json
+quant_result.json
